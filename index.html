@@ -1,1 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelham Productions — Enquiry Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --grey-900: #1a1a1a;
+  --grey-800: #222222;
+  --grey-700: #2e2e2e;
+  --grey-600: #3a3a3a;
+  --grey-500: #555555;
+  --grey-400: #7a7a7a;
+  --grey-300: #a0a0a0;
+  --off-white: #f2efe8;
+  --off-white-2: #e8e4dc;
+  --off-white-3: #ddd8ce;
+  --orange: #c85a1e;
+  --orange-hover: #d96522;
+  --orange-dim: rgba(200,90,30,0.08);
+  --orange-mid: rgba(200,90,30,0.15);
+  --green: #2d6a4f;
+  --green-text: #40916c;
+  --green-bg: rgba(64,145,108,0.08);
+  --red: #c1121f;
+  --red-text: #e63946;
+  --red-bg: rgba(230,57,70,0.08);
+  --gold: #b5830a;
+  --gold-text: #d4a017;
+  --gold-bg: rgba(212,160,23,0.08);
+}
+html, body { height: 100%; overflow: hidden; }
+body { background: var(--grey-900); color: var(--off-white); font-family: 'Manrope', sans-serif; font-size: 14px; line-height: 1.5; display: flex; flex-direction: column; height: 100vh; }
+.topbar { background: var(--grey-800); border-bottom: 3px solid var(--orange); display: flex; align-items: center; height: 56px; flex-shrink: 0; padding: 0 0 0 24px; }
+.logo { display: flex; align-items: center; gap: 12px; padding-right: 24px; border-right: 1px solid var(--grey-600); margin-right: 8px; flex-shrink: 0; }
+.logo-mark { width: 28px; height: 28px; background: var(--orange); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: var(--off-white); letter-spacing: -0.5px; }
+.logo-text { font-size: 13px; font-weight: 700; letter-spacing: 0.01em; color: var(--off-white); }
+.logo-text span { color: var(--grey-400); font-weight: 400; }
+.nav { display: flex; align-items: stretch; height: 100%; flex: 1; }
+.nav-btn { display: flex; align-items: center; padding: 0 20px; font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 500; color: var(--grey-400); background: none; border: none; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -3px; transition: color 0.15s, border-color 0.15s; white-space: nowrap; letter-spacing: 0.01em; }
+.nav-btn:hover { color: var(--off-white); }
+.nav-btn.active { color: var(--off-white); border-bottom-color: var(--orange); }
+.topbar-right { display: flex; align-items: center; gap: 16px; padding: 0 20px; margin-left: auto; flex-shrink: 0; }
+.status-badge { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; color: var(--grey-400); }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green-text); box-shadow: 0 0 0 2px var(--green-bg); }
+.view { display: none; flex: 1; overflow: hidden; }
+.view.active { display: flex; flex-direction: column; }
+.layout { display: grid; grid-template-columns: 320px 1fr; flex: 1; overflow: hidden; min-height: 0; }
+.sidebar { background: var(--grey-800); border-right: 1px solid var(--grey-700); display: flex; flex-direction: column; overflow: hidden; }
+.sidebar-header { padding: 20px 20px 16px; border-bottom: 1px solid var(--grey-700); flex-shrink: 0; }
+.sidebar-header h2 { font-size: 15px; font-weight: 700; color: var(--off-white); margin-bottom: 2px; }
+.sidebar-header p { font-size: 11px; color: var(--grey-400); font-weight: 400; }
+.sidebar-body { flex: 1; overflow-y: auto; padding: 20px; scrollbar-width: thin; scrollbar-color: var(--grey-600) transparent; }
+.type-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin-bottom: 20px; border: 3px solid var(--grey-600); }
+.type-btn { padding: 8px 0; text-align: center; font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--grey-400); background: none; border: none; cursor: pointer; transition: all 0.15s; }
+.type-btn.active { background: var(--orange); color: var(--off-white); }
+.type-btn:not(.active):hover { color: var(--off-white); }
+.field { margin-bottom: 16px; }
+.field-label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--grey-400); margin-bottom: 6px; }
+input[type="text"], input[type="email"], input[type="password"], textarea { width: 100%; background: var(--grey-900); border: 3px solid var(--grey-600); color: var(--off-white); font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 400; padding: 10px 12px; outline: none; transition: border-color 0.15s; line-height: 1.55; resize: vertical; border-radius: 0; }
+input:focus, textarea:focus { border-color: var(--grey-500); }
+input::placeholder, textarea::placeholder { color: var(--grey-500); }
+.field-hint { font-size: 11px; color: var(--grey-500); margin-top: 5px; }
+.btn-primary { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px 16px; background: var(--orange); color: var(--off-white); border: none; font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; transition: background 0.15s; margin-top: 8px; border-radius: 0; box-shadow: 0 2px 8px rgba(200,90,30,0.3); }
+.btn-primary:hover { background: var(--orange-hover); }
+.btn-primary:disabled { background: var(--grey-600); color: var(--grey-400); cursor: not-allowed; box-shadow: none; }
+.btn-ghost { display: flex; align-items: center; justify-content: center; width: 100%; padding: 10px 16px; margin-top: 6px; background: none; border: 3px solid var(--grey-600); color: var(--grey-400); font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: all 0.15s; border-radius: 0; }
+.btn-ghost:hover { border-color: var(--grey-500); color: var(--off-white); }
+.api-key-section { background: var(--grey-900); border: 3px solid var(--grey-700); padding: 14px; margin-bottom: 16px; }
+.api-key-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--orange); margin-bottom: 10px; }
+.api-key-row { display: flex; gap: 6px; }
+.api-key-row input { flex: 1; font-size: 11px; padding: 8px 10px; }
+.api-key-btn { padding: 8px 12px; background: var(--grey-700); border: none; color: var(--off-white); font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 600; cursor: pointer; flex-shrink: 0; transition: background 0.15s; }
+.api-key-btn:hover { background: var(--grey-600); }
+.api-key-status { font-size: 10px; margin-top: 6px; }
+.api-key-status.set { color: var(--green-text); }
+.api-key-status.unset { color: var(--grey-500); }
+.agent-panel { background: var(--grey-900); display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
+.progress-bar { background: var(--grey-800); border-bottom: 1px solid var(--grey-700); padding: 0 24px; display: flex; align-items: center; height: 44px; flex-shrink: 0; gap: 0; overflow-x: auto; scrollbar-width: none; }
+.progress-bar::-webkit-scrollbar { display: none; }
+.prog-step { display: flex; align-items: center; flex-shrink: 0; }
+.prog-node { display: flex; align-items: center; gap: 6px; padding: 4px 12px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--grey-500); border: 3px solid var(--grey-700); background: var(--grey-900); white-space: nowrap; transition: all 0.2s; }
+.prog-node.active { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+.prog-node.done { border-color: var(--green-text); color: var(--green-text); background: var(--green-bg); }
+.prog-arrow { width: 16px; height: 3px; background: var(--grey-700); flex-shrink: 0; }
+.agent-body { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 12px; scrollbar-width: thin; scrollbar-color: var(--grey-700) transparent; min-height: 0; }
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 16px; text-align: center; padding: 60px; color: var(--grey-600); }
+.empty-icon { width: 48px; height: 48px; border: 3px solid var(--grey-700); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.empty-state h3 { font-size: 14px; font-weight: 600; color: var(--grey-500); }
+.empty-state p { font-size: 12px; color: var(--grey-600); line-height: 1.7; max-width: 280px; }
+.agent-card { background: var(--grey-800); border: 3px solid var(--grey-700); overflow: hidden; }
+.agent-card.state-running { border-color: var(--orange); }
+.agent-card.state-green { border-color: var(--green-text); }
+.agent-card.state-gold { border-color: var(--gold-text); }
+.agent-card.state-red { border-color: var(--red-text); }
+.card-head { display: flex; align-items: center; gap: 0; border-bottom: 3px solid var(--grey-700); background: var(--grey-900); }
+.agent-card.state-running .card-head { border-bottom-color: var(--orange); }
+.agent-card.state-green .card-head { border-bottom-color: var(--green-text); }
+.agent-card.state-gold .card-head { border-bottom-color: var(--gold-text); }
+.agent-card.state-red .card-head { border-bottom-color: var(--red-text); }
+.card-num { width: 48px; height: 48px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; color: var(--grey-500); border-right: 3px solid var(--grey-700); background: var(--grey-800); }
+.agent-card.state-running .card-num { color: var(--orange); border-right-color: var(--orange); background: var(--orange-dim); }
+.agent-card.state-green .card-num { color: var(--green-text); border-right-color: var(--green-text); background: var(--green-bg); }
+.agent-card.state-gold .card-num { color: var(--gold-text); border-right-color: var(--gold-text); background: var(--gold-bg); }
+.agent-card.state-red .card-num { color: var(--red-text); border-right-color: var(--red-text); background: var(--red-bg); }
+.card-meta { flex: 1; padding: 10px 14px; }
+.card-name { font-size: 13px; font-weight: 700; color: var(--off-white); }
+.card-role { font-size: 11px; font-weight: 400; color: var(--grey-400); margin-top: 1px; }
+.card-badge { margin-right: 14px; padding: 4px 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; border: 3px solid; flex-shrink: 0; }
+.badge-running { border-color: var(--orange); color: var(--orange); }
+.badge-green { border-color: var(--green-text); color: var(--green-text); }
+.badge-gold { border-color: var(--gold-text); color: var(--gold-text); }
+.badge-red { border-color: var(--red-text); color: var(--red-text); }
+.card-body { padding: 16px 18px; }
+.thinking-row { display: flex; align-items: center; gap: 10px; color: var(--grey-500); font-size: 12px; font-weight: 500; }
+.spinner { width: 16px; height: 16px; border: 2px solid var(--grey-600); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.output-section { margin-bottom: 16px; }
+.output-section:last-child { margin-bottom: 0; }
+.output-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--orange); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.output-label::after { content: ''; flex: 1; height: 1px; background: var(--grey-700); }
+.output-text { font-size: 13px; line-height: 1.7; color: var(--off-white-2); white-space: pre-wrap; font-weight: 400; }
+.score-row { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+.score-number { font-size: 40px; font-weight: 800; line-height: 1; }
+.score-number.green { color: var(--green-text); }
+.score-number.gold { color: var(--gold-text); }
+.score-number.red { color: var(--red-text); }
+.score-track { flex: 1; height: 4px; background: var(--grey-700); min-width: 80px; }
+.score-fill { height: 100%; transition: width 0.7s ease; }
+.flag-table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+.flag-table tr { border-bottom: 1px solid var(--grey-700); }
+.flag-table tr:last-child { border-bottom: none; }
+.flag-table td { padding: 8px 12px 8px 0; font-size: 12px; vertical-align: top; }
+.flag-sev { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 7px; border: 2px solid; white-space: nowrap; margin-right: 12px; }
+.flag-sev.critical { border-color: var(--red-text); color: var(--red-text); }
+.flag-sev.warning { border-color: var(--gold-text); color: var(--gold-text); }
+.flag-field { font-weight: 600; color: var(--off-white); }
+.flag-reason { color: var(--grey-400); font-size: 12px; margin-top: 2px; }
+.verdict-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border: 3px solid; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+.verdict-chip.go { border-color: var(--green-text); color: var(--green-text); background: var(--green-bg); }
+.verdict-chip.caution { border-color: var(--gold-text); color: var(--gold-text); background: var(--gold-bg); }
+.verdict-chip.decline { border-color: var(--red-text); color: var(--red-text); background: var(--red-bg); }
+.email-box { background: var(--grey-900); border: 3px solid var(--grey-700); padding: 14px 16px; font-size: 12px; line-height: 1.8; color: var(--off-white-2); white-space: pre-wrap; margin-top: 8px; }
+.all-clear { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 3px solid var(--green-text); background: var(--green-bg); font-size: 12px; font-weight: 600; color: var(--green-text); }
+.approval-bar { display: none; flex-shrink: 0; background: var(--grey-800); border-top: 3px solid var(--orange); padding: 14px 24px; align-items: center; gap: 16px; flex-wrap: wrap; }
+.approval-bar.show { display: flex; }
+.approval-info { flex: 1; min-width: 200px; }
+.approval-info h3 { font-size: 14px; font-weight: 700; color: var(--off-white); }
+.approval-info p { font-size: 11px; color: var(--grey-400); margin-top: 2px; }
+.approval-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-sm { padding: 8px 16px; font-family: 'Manrope', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; border-radius: 0; transition: all 0.15s; }
+.btn-sm-ghost { background: none; border: 3px solid var(--grey-600); color: var(--grey-400); }
+.btn-sm-ghost:hover { border-color: var(--grey-500); color: var(--off-white); }
+.btn-sm-green { background: var(--green-text); border: 3px solid var(--green-text); color: var(--off-white); box-shadow: 0 2px 8px rgba(64,145,108,0.3); }
+.btn-sm-green:hover { background: #357a5c; border-color: #357a5c; }
+.kb-scroll { flex: 1; overflow-y: auto; padding: 32px; scrollbar-width: thin; scrollbar-color: var(--grey-700) transparent; }
+.kb-inner { max-width: 860px; margin: 0 auto; }
+.kb-page-title { font-size: 22px; font-weight: 800; color: var(--off-white); margin-bottom: 4px; }
+.kb-page-sub { font-size: 13px; color: var(--grey-400); margin-bottom: 32px; }
+.kb-section { margin-bottom: 32px; }
+.kb-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--orange); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 3px solid var(--grey-700); }
+.kb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+.kb-row { background: var(--grey-800); padding: 14px 16px; border: 3px solid var(--grey-700); }
+.kb-row-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--grey-400); margin-bottom: 6px; }
+.kb-row-value { font-size: 13px; font-weight: 500; color: var(--off-white); line-height: 1.6; }
+.tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.tag { padding: 3px 10px; border: 2px solid var(--grey-600); font-size: 11px; font-weight: 600; color: var(--grey-400); text-transform: uppercase; letter-spacing: 0.04em; }
+.tag.orange { border-color: var(--orange); color: var(--orange); background: var(--orange-dim); }
+.tag.green { border-color: var(--green-text); color: var(--green-text); background: var(--green-bg); }
+.tag.red { border-color: var(--red-text); color: var(--red-text); background: var(--red-bg); }
+@media (max-width: 800px) { .layout { grid-template-columns: 1fr; } .sidebar { max-height: 45vh; border-right: none; border-bottom: 1px solid var(--grey-700); } .agent-panel { min-height: 55vh; } .kb-grid { grid-template-columns: 1fr; } .kb-scroll { padding: 20px; } .agent-body { padding: 16px; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-mark">KP</div>
+    <div class="logo-text">Kelham Productions <span>/ Enquiry Intelligence</span></div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn active" onclick="switchView('pipeline', this)">Pipeline</button>
+    <button class="nav-btn" onclick="switchView('knowledge', this)">Knowledge Base</button>
+  </div>
+  <div class="topbar-right">
+    <div class="status-badge"><div class="status-dot"></div> 6 agents ready</div>
+  </div>
+</div>
+
+<div class="view active" id="view-pipeline">
+  <div class="layout">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h2>New Enquiry</h2>
+        <p>Paste from Typeform, email, or call notes</p>
+      </div>
+      <div class="sidebar-body">
+
+        <div class="api-key-section">
+          <div class="api-key-section-title">Anthropic API Key</div>
+          <div class="api-key-row">
+            <input type="password" id="api-key-input" placeholder="sk-ant-..." />
+            <button class="api-key-btn" onclick="saveKey()">Save</button>
+          </div>
+          <div class="api-key-status unset" id="api-key-status">No key set — required to run agents</div>
+        </div>
+
+        <div class="field">
+          <span class="field-label">Client Type</span>
+          <div class="type-toggle">
+            <button class="type-btn active" onclick="setType('new', this)">New Client</button>
+            <button class="type-btn" onclick="setType('existing', this)">Existing</button>
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Client Name</label>
+          <input type="text" id="f-name" placeholder="e.g. Nova Brand Co." />
+        </div>
+        <div class="field">
+          <label class="field-label">Client Email</label>
+          <input type="email" id="f-email" placeholder="e.g. hello@novabrand.com" />
+        </div>
+        <div class="field">
+          <label class="field-label">Enquiry</label>
+          <textarea id="f-enquiry" rows="9" placeholder="Paste the full enquiry here — Typeform export, forwarded email, or call notes."></textarea>
+          <div class="field-hint">The Intake Agent structures it — no formatting needed.</div>
+        </div>
+        <button class="btn-primary" id="run-btn" onclick="runPipeline()">▶ Run All Agents</button>
+        <button class="btn-ghost" onclick="loadDemo()">Load Demo Enquiry</button>
+      </div>
+    </div>
+
+    <div class="agent-panel">
+      <div class="progress-bar">
+        <div class="prog-step"><div class="prog-node" id="prog-0">01 Intake</div><div class="prog-arrow"></div></div>
+        <div class="prog-step"><div class="prog-node" id="prog-1">02 Gap</div><div class="prog-arrow"></div></div>
+        <div class="prog-step"><div class="prog-node" id="prog-2">03 Producer</div><div class="prog-arrow"></div></div>
+        <div class="prog-step"><div class="prog-node" id="prog-3">04 Budget</div><div class="prog-arrow"></div></div>
+        <div class="prog-step"><div class="prog-node" id="prog-4">05 MD</div><div class="prog-arrow"></div></div>
+        <div class="prog-step"><div class="prog-node" id="prog-5">06 Comms</div></div>
+      </div>
+      <div class="agent-body" id="agent-body">
+        <div class="empty-state" id="empty-state">
+          <div class="empty-icon">▶</div>
+          <h3>Ready to run</h3>
+          <p>Add your API key, paste an enquiry, and hit Run. Six trained agents deliver a complete briefing.</p>
+        </div>
+      </div>
+      <div class="approval-bar" id="approval-bar">
+        <div class="approval-info">
+          <h3>Pipeline Complete</h3>
+          <p id="approval-sub">All six agents have reviewed this enquiry.</p>
+        </div>
+        <div class="approval-actions">
+          <button class="btn-sm btn-sm-ghost" onclick="copyBriefing()">Copy Briefing</button>
+          <button class="btn-sm btn-sm-ghost" onclick="resetPipeline()">Reset</button>
+          <button class="btn-sm btn-sm-green" onclick="approveBriefing()">✓ Approve — Move to Bonsai</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="view-knowledge">
+  <div class="kb-scroll">
+    <div class="kb-inner">
+      <div class="kb-page-title">Agent Knowledge Base</div>
+      <div class="kb-page-sub">Business context embedded into every agent's system prompt.</div>
+      <div class="kb-section">
+        <div class="kb-section-title">Business Profile</div>
+        <div class="kb-grid">
+          <div class="kb-row"><div class="kb-row-label">Services</div><div class="tags"><span class="tag orange">Commercial Ads</span><span class="tag orange">Brand Film</span><span class="tag orange">Events</span><span class="tag orange">Post-Production</span><span class="tag orange">Photography</span></div></div>
+          <div class="kb-row"><div class="kb-row-label">Territory</div><div class="kb-row-value">UK + International</div></div>
+          <div class="kb-row"><div class="kb-row-label">Target Clients</div><div class="kb-row-value">Mid-size businesses</div></div>
+          <div class="kb-row"><div class="kb-row-label">Client Tone</div><div class="kb-row-value">Warm, conversational — strong brand voice</div></div>
+        </div>
+      </div>
+      <div class="kb-section">
+        <div class="kb-section-title">Commercial Parameters</div>
+        <div class="kb-grid">
+          <div class="kb-row"><div class="kb-row-label">Minimum Value</div><div class="kb-row-value" style="color:var(--green-text)">£3,000 – £5,000</div></div>
+          <div class="kb-row"><div class="kb-row-label">Sweet Spot</div><div class="kb-row-value" style="color:var(--orange)">£5,000 – £15,000</div></div>
+          <div class="kb-row"><div class="kb-row-label">Growth Targets</div><div class="tags"><span class="tag green">International</span><span class="tag green">High-margin retainers</span><span class="tag green">Large one-offs</span></div></div>
+          <div class="kb-row"><div class="kb-row-label">Revision Policy</div><div class="kb-row-value">1 round included · additional rounds charged</div></div>
+        </div>
+      </div>
+      <div class="kb-section">
+        <div class="kb-section-title">Red Flags</div>
+        <div class="kb-grid">
+          <div class="kb-row"><div class="kb-row-label">MD Agent Triggers</div><div class="tags"><span class="tag red">Rushed timeline</span><span class="tag red">No budget clarity</span><span class="tag red">Multiple decision-makers</span><span class="tag red">Price-driven</span></div></div>
+          <div class="kb-row"><div class="kb-row-label">Minimum Lead Time</div><div class="kb-row-value" style="color:var(--red-text)">4 – 8 weeks from confirmed brief</div></div>
+        </div>
+      </div>
+      <div class="kb-section">
+        <div class="kb-section-title">Production Parameters</div>
+        <div class="kb-grid">
+          <div class="kb-row"><div class="kb-row-label">Core Crew</div><div class="tags"><span class="tag">Director</span><span class="tag">Camera Op / DOP</span><span class="tag">Editor</span><span class="tag">Photographer</span></div></div>
+          <div class="kb-row"><div class="kb-row-label">Mandatory Fields</div><div class="kb-row-value">Project type · Platform · Deadline · Budget · Usage rights · Revisions · Approver</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let clientType = 'new';
+let agentOutputs = {};
+let fullBriefing = '';
+let apiKey = localStorage.getItem('kp_api_key') || '';
+
+window.addEventListener('load', () => {
+  if (apiKey) {
+    document.getElementById('api-key-input').value = apiKey;
+    document.getElementById('api-key-status').textContent = 'API key set ✓';
+    document.getElementById('api-key-status').className = 'api-key-status set';
+  }
+});
+
+function saveKey() {
+  const val = document.getElementById('api-key-input').value.trim();
+  if (!val) return;
+  apiKey = val;
+  localStorage.setItem('kp_api_key', val);
+  document.getElementById('api-key-status').textContent = 'API key saved ✓';
+  document.getElementById('api-key-status').className = 'api-key-status set';
+}
+
+function switchView(id, btn) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('view-' + id).classList.add('active');
+}
+
+function setType(type, btn) {
+  clientType = type;
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function loadDemo() {
+  document.getElementById('f-name').value = 'Marcus Webb';
+  document.getElementById('f-email').value = 'marcus@elevatebrands.co.uk';
+  document.getElementById('f-enquiry').value = `Hi, found you through a recommendation.\n\nWe're a lifestyle brand launching an activewear range in March. Need a 60-second commercial for broadcast plus cutdowns for Instagram and TikTok.\n\nMood board and rough treatment ready. Talent sorted (3 athletes). Shoot ideally London or Barcelona.\n\nBudget: £18k–£22k all in. Looking to shoot in 6 weeks, air the month after.\n\nI'm Marcus, Head of Marketing. Sign-off from our Creative Director Sophie Tran.`;
+  document.querySelectorAll('.type-btn')[0].click();
+}
+
+function buildCtx() {
+  return `You work at Kelham Productions, a UK-based video and photo production company.\n\nBUSINESS: Commercial advertising · Corporate/brand film · Events · Post-production · Photography\nTERRITORY: UK + International | TARGET: Mid-size businesses\nBUDGET: Minimum £3–5k · Sweet spot £5–15k · Growth: international, high-margin retainers, large one-offs\nCREW: Director · Camera Op/DOP · Editor · Photographer\nLEAD TIME: Minimum 4–8 weeks from confirmed brief\nREVISIONS: 1 round included, extra rounds charged\nTONE: Warm, conversational, strong brand voice\n\nRED FLAGS: Rushed timeline under 4 weeks · No budget clarity · Multiple decision-makers/no clear approver · Price-driven\n\nMANDATORY FIELDS: Project type · Format · Platform · Deadline/air date · Budget · Usage rights · Revision rounds · Key approver`;
+}
+
+const AGENTS = [
+  { id:'intake', num:'01', name:'Intake Agent', role:'Intake Coordinator',
+    prompt:(ctx)=>`${buildCtx()}\n\nROLE: Intake Coordinator. Transform the raw enquiry into a clean structured brief. Only state what is present.\n\nSections: CLIENT · PROJECT · TIMELINE · BUDGET · TEAM · ASSETS · NOTES\n\nClient type: ${ctx.type} | Client: ${ctx.name}\nENQUIRY:\n${ctx.enquiry}` },
+  { id:'gap', num:'02', name:'Gap Agent', role:'Information Quality',
+    prompt:(ctx)=>`${buildCtx()}\n\nROLE: Information Quality Manager. Review intake brief, score completeness, identify missing fields, draft follow-up email.\n\nINTAKE:\n${agentOutputs['intake']||''}\n\nRespond ONLY as JSON (no markdown):\n{"score":<0-100>,"missing":[{"field":"name","severity":"critical or warning","reason":"why"}],"allClear":true/false,"emailSubject":"...","emailBody":"warm email to ${ctx.name} for missing info only. Sign: The Production Team"}` },
+  { id:'producer', num:'03', name:'Producer Agent', role:'Senior Producer',
+    prompt:(ctx)=>`${buildCtx()}\n\nROLE: Senior Producer. Assess production feasibility.\n\nINTAKE:\n${agentOutputs['intake']||''}\n\nSections: SCOPE REALISM · CREW REQUIREMENTS · COMPLEXITY FLAGS · DISCOVERY QUESTIONS · PRODUCER VERDICT` },
+  { id:'budget', num:'04', name:'Budget Agent', role:'Commercial Analyst',
+    prompt:(ctx)=>`${buildCtx()}\n\nROLE: Commercial Analyst.\n\nRates: Full commercial 1-day London £8–14k · Brand film 1–2 days £10–20k · Events £3.5–7k · Post-only £2–8k · Photography half-day £2.5–4.5k · International +20–40%\n\nINTAKE:\n${agentOutputs['intake']||''}\n\nSections: BUDGET ALIGNMENT · MARGIN POTENTIAL · COMMERCIAL SIGNALS · RECOMMENDATION` },
+  { id:'md', num:'05', name:'MD Agent', role:'Managing Director',
+    prompt:(ctx)=>`${buildCtx()}\n\nROLE: Managing Director. Final go/no-go.\n\nINTAKE: ${agentOutputs['intake']||''}\nPRODUCER: ${agentOutputs['producer']||''}\nBUDGET: ${agentOutputs['budget']||''}\n\nSections: STRATEGIC FIT · CLIENT QUALITY · RISK ASSESSMENT · RED FLAGS · VERDICT (GO / PROCEED WITH CAUTION / DECLINE) · CONDITIONS` },
+  { id:'comms', num:'06', name:'Comms Agent', role:'Client Communications',
+    prompt:(ctx)=>`${buildCtx()}\n\nROLE: Client Communications Lead. Write warm acknowledgement email. Reference actual project. Max 130 words. No subject line.\n\nCLIENT: ${ctx.name} (${ctx.email})\nCONTEXT:\n${agentOutputs['intake']||''}` }
+];
+
+async function runPipeline() {
+  if (!apiKey) { alert('Please add your Anthropic API key first.'); return; }
+  const enquiry = document.getElementById('f-enquiry').value.trim();
+  const name = document.getElementById('f-name').value.trim() || 'the client';
+  const email = document.getElementById('f-email').value.trim() || '';
+  if (!enquiry) { alert('Please paste an enquiry first.'); return; }
+  agentOutputs = {}; fullBriefing = '';
+  document.getElementById('run-btn').disabled = true;
+  document.getElementById('approval-bar').classList.remove('show');
+  const body = document.getElementById('agent-body');
+  body.innerHTML = '';
+  for (let i=0;i<6;i++) { const p=document.getElementById('prog-'+i); if(p) p.className='prog-node'; }
+  const ctx = { enquiry, name, email, type: clientType };
+  for (let i=0;i<AGENTS.length;i++) {
+    const agent = AGENTS[i];
+    const prog = document.getElementById('prog-'+i);
+    if (prog) prog.classList.add('active');
+    const card = createCard(agent);
+    body.appendChild(card);
+    body.scrollTop = body.scrollHeight;
+    try {
+      const result = await callClaude(agent.prompt(ctx));
+      agentOutputs[agent.id] = result;
+      renderCard(card, agent, result, ctx);
+      if (prog) { prog.classList.remove('active'); prog.classList.add('done'); }
+    } catch(err) {
+      renderError(card, agent, err.message);
+      if (prog) prog.classList.remove('active');
+    }
+    await sleep(300);
+  }
+  document.getElementById('run-btn').disabled = false;
+  showApproval(ctx);
+}
+
+async function callClaude(prompt) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.content[0].text;
+}
+
+function createCard(agent) {
+  const el = document.createElement('div');
+  el.className = 'agent-card state-running';
+  el.id = 'card-'+agent.id;
+  el.innerHTML = `<div class="card-head"><div class="card-num">${agent.num}</div><div class="card-meta"><div class="card-name">${agent.name}</div><div class="card-role">${agent.role}</div></div><div class="card-badge badge-running">Running</div></div><div class="card-body"><div class="thinking-row"><div class="spinner"></div>Analysing enquiry…</div></div>`;
+  return el;
+}
+
+function renderCard(card, agent, result, ctx) {
+  const badge = card.querySelector('.card-badge');
+  const body = card.querySelector('.card-body');
+  if (agent.id === 'gap') {
+    try {
+      const parsed = JSON.parse(result.replace(/```json|```/g,'').trim());
+      agentOutputs['gap_parsed'] = parsed;
+      const s = parsed.score;
+      const cls = s>=80?'green':s>=55?'gold':'red';
+      card.className=`agent-card state-${cls}`; badge.className=`card-badge badge-${cls}`; badge.textContent=`${s}% Complete`;
+      let html=`<div class="output-section"><div class="output-label">Completeness Score</div><div class="score-row"><div class="score-number ${cls}">${s}%</div><div class="score-track"><div class="score-fill" style="width:${s}%;background:var(--${cls==='green'?'green-text':cls==='gold'?'gold-text':'red-text'})"></div></div></div></div>`;
+      if (parsed.missing?.length) {
+        html+=`<div class="output-section"><div class="output-label">Missing Fields</div><table class="flag-table">`;
+        parsed.missing.forEach(m=>{html+=`<tr><td style="padding-right:12px;width:1%"><span class="flag-sev ${m.severity}">${m.severity}</span></td><td><div class="flag-field">${esc(m.field)}</div><div class="flag-reason">${esc(m.reason)}</div></td></tr>`;});
+        html+=`</table></div>`;
+        if (parsed.emailBody) html+=`<div class="output-section"><div class="output-label">Draft Follow-up Email</div><div class="email-box">${esc(parsed.emailBody)}</div></div>`;
+      } else { html+=`<div class="all-clear">✓ All mandatory fields present — no follow-up needed.</div>`; }
+      body.innerHTML=html; return;
+    } catch(e) {}
+  }
+  if (agent.id === 'md') {
+    const vMatch=result.match(/VERDICT[:\s—\-]+([A-Z\s]+)/i);
+    const v=(vMatch?.[1]||'').trim().toUpperCase();
+    let cls='green',badgeText='✓ Go',chipClass='go';
+    if(v.includes('CAUTION')){cls='gold';badgeText='⚠ Caution';chipClass='caution';}
+    else if(v.includes('DECLINE')){cls='red';badgeText='✗ Decline';chipClass='decline';}
+    card.className=`agent-card state-${cls}`; badge.className=`card-badge badge-${cls}`; badge.textContent=badgeText;
+    const vLabel=v.includes('CAUTION')?'Proceed with Caution':v.includes('DECLINE')?'Decline':'Go';
+    body.innerHTML=`<div class="output-section"><div class="output-label">MD Verdict</div><div class="verdict-chip ${chipClass}">${vLabel}</div></div><div class="output-section"><div class="output-label">Full Assessment</div><div class="output-text">${esc(result)}</div></div>`; return;
+  }
+  card.className='agent-card state-green'; badge.className='card-badge badge-green'; badge.textContent='Complete';
+  const label=agent.id==='comms'?'Draft Acknowledgement Email':'Assessment';
+  const content=agent.id==='comms'?`<div class="email-box">${esc(result)}</div>`:`<div class="output-text">${esc(result)}</div>`;
+  body.innerHTML=`<div class="output-section"><div class="output-label">${label}</div>${content}</div>`;
+}
+
+function renderError(card, agent, msg) {
+  card.className='agent-card state-red';
+  card.querySelector('.card-badge').className='card-badge badge-red';
+  card.querySelector('.card-badge').textContent='Error';
+  card.querySelector('.card-body').innerHTML=`<div style="color:var(--red-text);font-size:12px;font-weight:500">${esc(msg)}</div>`;
+}
+
+function showApproval(ctx) {
+  document.getElementById('approval-bar').classList.add('show');
+  const md=agentOutputs['md']||'';
+  const v=(md.match(/VERDICT[:\s—\-]+([A-Z\s]+)/i)||[])[1]?.trim()||'Complete';
+  document.getElementById('approval-sub').textContent=`MD verdict: ${v} · ${ctx.name} · ${clientType} client`;
+  fullBriefing=`KELHAM PRODUCTIONS — ENQUIRY BRIEFING\n${ctx.name} | ${new Date().toLocaleDateString('en-GB')}\n${'─'.repeat(60)}\n\n`;
+  AGENTS.forEach(a=>{if(agentOutputs[a.id]) fullBriefing+=`── ${a.name.toUpperCase()} ──\n${agentOutputs[a.id]}\n\n`;});
+}
+
+function copyBriefing() {
+  navigator.clipboard.writeText(fullBriefing).then(()=>{const btn=event.target;btn.textContent='✓ Copied';setTimeout(()=>btn.textContent='Copy Briefing',2000);});
+}
+
+function approveBriefing() {
+  alert('Briefing approved ✓\n\nOpen Bonsai and build the proposal using this briefing as your source of truth.');
+}
+
+function resetPipeline() {
+  agentOutputs={};
+  document.getElementById('agent-body').innerHTML=`<div class="empty-state"><div class="empty-icon">▶</div><h3>Ready to run</h3><p>Paste an enquiry on the left and hit Run.</p></div>`;
+  document.getElementById('approval-bar').classList.remove('show');
+  for(let i=0;i<6;i++){const p=document.getElementById('prog-'+i);if(p)p.className='prog-node';}
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+</script>
+</body>
+</html>
 
